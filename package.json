@@ -1,0 +1,44 @@
+{
+	"name": "simple-state-store",
+	"version": "1.0.0",
+	"description": "Very simple state management tool which combines power of RxJS BehaviorSubject and selectors",
+	"exports": {
+		".": {
+			"import": "./dist/core/index.js",
+			"types": "./dist/core/index.d.ts"
+		},
+		"./react": {
+			"import": "./dist/react/index.js",
+			"types": "./dist/react/index.d.ts"
+		}
+	},
+	"typesVersions": {
+		"*": {
+			"react": [
+				"./dist/core/index.d.ts"
+			]
+		}
+	},
+	"scripts": {
+		"build": "tsc"
+	},
+	"keywords": [
+		"state management",
+		"state store",
+		"react"
+	],
+	"author": {
+		"name": "Anton Arnautov",
+		"email": "arnautov.anton@gmail.com",
+		"url": "https://github.com/arnautov-anton"
+	},
+	"homepage": "https://github.com/arnautov-anton/simple-state-store#readme",
+	"license": "UNLICENSED",
+	"devDependencies": {
+		"typescript": "^5.3.3",
+		"@types/react": "^18.2.42"
+	},
+	"peerDependencies": {
+		"react": "^16.0.0 || ^17.0.0 || ^18.0.0"
+	}
+}
