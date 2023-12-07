@@ -2,6 +2,9 @@
 	"name": "simple-state-store",
 	"version": "1.0.0",
 	"description": "Very simple state management tool which combines power of RxJS BehaviorSubject and selectors",
+	"files": [
+		"dist/"
+	],
 	"exports": {
 		".": {
 			"import": "./dist/core/index.js",
@@ -20,7 +23,8 @@
 		}
 	},
 	"scripts": {
-		"build": "tsc"
+		"build": "tsc",
+		"prepare": "pnpm build"
 	},
 	"keywords": [
 		"state management",
