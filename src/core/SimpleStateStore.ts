@@ -1,29 +1,30 @@
 type Patch<T> = (value: T) => T;
+type Handler<T> = (nextValue: T) => any;
 
 function isPatch<T>(value: T | Patch<T>): value is Patch<T> {
 	return typeof value === "function";
 }
 
-export const SimpleStateStore = <T>(initialValue: T) => {
-	let value = initialValue;
-	const handlerSet = new Set<(_: T) => void>();
+export class SimpleStateStore<T> {
+	private value: T;
+	private handlerSet = new Set<Handler<T>>();
 
-	const next = (newValue: T | Patch<T>) => {
-		value = isPatch(newValue) ? newValue(value) : newValue;
-		handlerSet.forEach((h) => h(value));
+	constructor(initialValue: T) {
+		this.value = initialValue;
+	}
+
+	public next = (newValue: T | Patch<T>) => {
+		this.value = isPatch(newValue) ? newValue(this.value) : newValue;
+		this.handlerSet.forEach((handler) => handler(this.value));
 	};
 
-	const subscribe = (handler: (_: T) => void) => {
-		handler(value);
-		handlerSet.add(handler);
+	public getLatestValue = () => this.value;
+
+	public subscribe = (handler: Handler<T>) => {
+		handler(this.value);
+		this.handlerSet.add(handler);
 		return () => {
-			handlerSet.delete(handler);
+			this.handlerSet.delete(handler);
 		};
 	};
-
-	const getLatestValue = () => value;
-
-	return { subscribe, next, getLatestValue } as const;
-};
-
-export type SimpleStateStore<T> = typeof SimpleStateStore<T>;
+}
