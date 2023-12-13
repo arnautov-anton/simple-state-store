@@ -15,13 +15,6 @@
 			"types": "./dist/react/index.d.ts"
 		}
 	},
-	"typesVersions": {
-		"*": {
-			"react": [
-				"./dist/core/index.d.ts"
-			]
-		}
-	},
 	"scripts": {
 		"build": "tsc",
 		"prepare": "pnpm build"
@@ -39,10 +32,13 @@
 	"homepage": "https://github.com/arnautov-anton/simple-state-store#readme",
 	"license": "UNLICENSED",
 	"devDependencies": {
-		"typescript": "^5.3.3",
-		"@types/react": "^18.2.42"
+		"@types/react": "^18.2.42",
+		"typescript": "^5.3.3"
 	},
 	"peerDependencies": {
 		"react": "^16.0.0 || ^17.0.0 || ^18.0.0"
+	},
+	"dependencies": {
+		"tslib": "^2.6.2"
 	}
 }
