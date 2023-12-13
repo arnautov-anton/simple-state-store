@@ -1,7 +1,14 @@
 type Patch<T> = (value: T) => T;
 type Handler<T> = (nextValue: T) => any;
+type Initiator<T> = (
+	get: SimpleStateStore<T>["getLatestValue"],
+	set: SimpleStateStore<T>["next"]
+) => T;
 
 function isPatch<T>(value: T | Patch<T>): value is Patch<T> {
+	return typeof value === "function";
+}
+function isInitiator<T>(value: T | Initiator<T>): value is Initiator<T> {
 	return typeof value === "function";
 }
 
@@ -9,12 +16,22 @@ export class SimpleStateStore<T> {
 	private value: T;
 	private handlerSet = new Set<Handler<T>>();
 
-	constructor(initialValue: T) {
-		this.value = initialValue;
+	constructor(initialValueOrInitiator: T | Initiator<T>) {
+		this.value = isInitiator(initialValueOrInitiator)
+			? initialValueOrInitiator(this.getLatestValue, this.next)
+			: initialValueOrInitiator;
 	}
 
-	public next = (newValue: T | Patch<T>) => {
-		this.value = isPatch(newValue) ? newValue(this.value) : newValue;
+	public next = (newValueOrPatch: T | Patch<T>) => {
+		// newValue (or patch output) should never be mutated previous value
+		const newValue = isPatch(newValueOrPatch)
+			? newValueOrPatch(this.value)
+			: newValueOrPatch;
+
+		// do not notify subscribers if the value hasn't changed (or mutation has been returned)
+		if (newValue === this.value) return;
+		this.value = newValue;
+
 		this.handlerSet.forEach((handler) => handler(this.value));
 	};
 
