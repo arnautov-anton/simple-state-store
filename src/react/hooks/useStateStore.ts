@@ -1,27 +1,29 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 import type { SimpleStateStore } from "../../core";
 
-export const useStateStore = <G, L extends unknown[]>(
-	store: SimpleStateStore<G>,
-	selector: (v: G) => L
+export const useStateStore = <T, O extends readonly unknown[]>(
+	store: SimpleStateStore<T>,
+	selector: (v: T) => O
 ) => {
-	const [state, setState] = useState<L>(selector(store.getLatestValue()));
+	const [state, setState] = useState<O>(selector(store.getLatestValue()));
+	const stateRef = useRef<O>(state);
 
 	useEffect(() => {
 		const unsubscribe = store.subscribe((newValue) => {
+			// calling selector should always produce new array
 			const selectedValues = selector(newValue);
 
-			setState((currentValue) => {
-				// check for unequal members
-				// do not trigger "re-render" unless members changed
-				const hasUnequalMembers = currentValue.some(
-					(value, index) => selectedValues[index] !== value
-				);
+			// check for unequal members
+			// do not trigger re-render unless members have changed
+			const hasUnequalMembers = stateRef.current.some(
+				(value, index) => selectedValues[index] !== value
+			);
 
-				// return currentValue to bail out of re-render trigger
-				return hasUnequalMembers ? selectedValues : currentValue;
-			});
+			if (hasUnequalMembers) {
+				stateRef.current = selectedValues;
+				setState(selectedValues);
+			}
 		});
 
 		return unsubscribe;
