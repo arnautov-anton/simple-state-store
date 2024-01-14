@@ -15,6 +15,13 @@
 			"types": "./dist/react/index.d.ts"
 		}
 	},
+	"typesVersions": {
+		"*": {
+			"react": [
+				"./dist/react/index.d.ts"
+			]
+		}
+	},
 	"scripts": {
 		"build": "tsc",
 		"prepare": "pnpm build"

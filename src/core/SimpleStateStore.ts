@@ -12,7 +12,12 @@ function isInitiator<T>(value: T | Initiator<T>): value is Initiator<T> {
 	return typeof value === "function";
 }
 
-export class SimpleStateStore<T> {
+export class SimpleStateStore<
+	T,
+	O extends {
+		[K in keyof T]: T[K] extends Function ? K : never;
+	}[keyof T] = never
+> {
 	private value: T;
 	private handlerSet = new Set<Handler<T>>();
 
@@ -36,6 +41,14 @@ export class SimpleStateStore<T> {
 	};
 
 	public getLatestValue = () => this.value;
+
+	// TODO: filter and return actions (functions) only in a type-safe manner (only allows state T to be a dict)
+	// public get actions(): { [K in O]: T[K] } {
+	// 	return {};
+	// }
+	public get actions() {
+		return this.value;
+	}
 
 	public subscribe = (handler: Handler<T>) => {
 		handler(this.value);
