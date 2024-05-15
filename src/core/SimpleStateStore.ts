@@ -13,16 +13,16 @@ function isInitiator<T>(value: T | Initiator<T>): value is Initiator<T> {
 }
 
 export class SimpleStateStore<
-	T,
-	O extends {
-		[K in keyof T]: T[K] extends Function ? K : never;
-	}[keyof T] = never
+	T
+	// O extends {
+	// 	[K in keyof T]: T[K] extends Function ? K : never;
+	// }[keyof T] = never
 > {
 	private value: T;
 	private handlerSet = new Set<Handler<T>>();
 
 	constructor(initialValueOrInitiator: T | Initiator<T>) {
-		this.value = isInitiator(initialValueOrInitiator)
+		this.value = isInitiator<T>(initialValueOrInitiator)
 			? initialValueOrInitiator(this.getLatestValue, this.next)
 			: initialValueOrInitiator;
 	}
@@ -56,5 +56,27 @@ export class SimpleStateStore<
 		return () => {
 			this.handlerSet.delete(handler);
 		};
+	};
+
+	public subscribeWithSelector = <O extends readonly unknown[]>(
+		selector: (nextValue: T) => O,
+		handler: Handler<O>
+	) => {
+		let selectedValues = selector(this.value);
+
+		const wrappedHandler: Handler<T> = (nextValue) => {
+			const newlySelectedValues = selector(nextValue);
+
+			const hasUnequalMembers = selectedValues.some(
+				(value, index) => value !== newlySelectedValues[index]
+			);
+
+			if (hasUnequalMembers) {
+				selectedValues = newlySelectedValues;
+				handler(newlySelectedValues);
+			}
+		};
+
+		return this.subscribe(wrappedHandler);
 	};
 }
