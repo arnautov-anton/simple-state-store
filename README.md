@@ -2,7 +2,12 @@
 
 Very simple state management tool which combines power of RxJS BehaviorSubject and selectors for atomic updates.
 
-> **Note:** While this package certainly works - I do not recommend using it in production as this is only for education purposes - mostly for me. I like designs of Zustand and RxJS and to understand some of the core principles the packages offer I wrote this one implementing "something" from each one.
+> [!NOTE] 
+> While this package certainly works - I do not recommend using it in production as this is only for education purposes - mostly for me. I like designs of Zustand and RxJS and to understand some of the core principles the packages offer I wrote this one implementing "something" from each one. 
+
+> [!IMPORTANT] 
+> __Edit__: This code has been moved to another repository and is being released under name [@stream-io/state-store](https://npmjs.com/package/@stream-io/state-store).
+
 
 ## How to use it
 
